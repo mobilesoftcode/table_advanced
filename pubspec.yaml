@@ -1,0 +1,27 @@
+name: table_advanced
+description: A table for Flutter projects.
+version: 0.0.1
+homepage: https://github.com/mobilesoftcode/table_advanced
+issue_tracker: https://github.com/mobilesoftcode/table_advanced/issues
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  linked_scroll_controller: ^0.2.0
+  provider: ^6.0.5
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.3
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
