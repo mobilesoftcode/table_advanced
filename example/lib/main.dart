@@ -76,15 +76,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: TableAdvanced<String>(
         columnHeaders: [
-          AdvancedTableColumnHeader(
+          TableAdvancedColumnHeader(
             child: const Text("Header 1"),
           ),
-          AdvancedTableColumnHeader(
+          TableAdvancedColumnHeader(
             child: const Text("Header 2"),
           ),
         ],
         rowBuilder: (item) {
-          return AdvancedTableRow(
+          return TableAdvancedRow(
               data: DataRow(cells: [
             DataCell(
               Text(item),
