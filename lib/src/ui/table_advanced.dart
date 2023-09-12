@@ -1,31 +1,61 @@
 import 'package:table_advanced/table_advanced.dart';
-import '../table_advanced_controller.dart';
+import '../logic/table_advanced_controller.dart';
 import 'table_advanced_pagination.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 import 'package:provider/provider.dart';
 
-class AdvancedTableColumnHeader {
+/// Configuration for columnn of [TableAdvanced].
+class TableAdvancedColumnHeader {
+  /// Widget to show as colum  header
   final Widget child;
+
+  /// Flex space taken by each column in the table. Defaults to 1.
   final int flex;
+
+  /// If provided, every time the user taps on the column header, this method
+  /// will be called. This can be useful i.e. to sort elements in the table.
   final VoidCallback? onTap;
 
-  AdvancedTableColumnHeader({
+  /// Configuration for column headers of [TableAdvanced].
+  ///
+  /// The `child` is the [Widget] shown as column header. Use `flex` to specify
+  /// the relative spacing taken by each column. Furthermore, if `onTap` if provided,
+  /// a callback will be fired every time the user taps on the colum header.
+  TableAdvancedColumnHeader({
     required this.child,
     this.flex = 1,
     this.onTap,
   });
 }
 
-class AdvancedTableRow {
+/// Configuration for rows in [TableAdvanced].
+class TableAdvancedRow {
+  /// The content of the row.
   final DataRow data;
+
+  /// Eventually specify a custom style for this row.
   final BoxDecoration Function(BuildContext context, int index)? style;
+
+  /// Set the initial checked value for this row.
   final bool? checked;
+
+  /// If _false_, the row will not be checkable.
   final bool? disabled;
+
+  /// If provided, an icon to expand the row will be shown at the end of the row,
+  /// and when tapped this widget will be shown below the initial row.
   final Widget? expandedWidget;
+
+  /// A list of actions (usually [IconButton]s) shown at the end of the row (i.e.
+  /// action to delete the row).
   final List<Widget>? actions;
-  AdvancedTableRow({
+
+  /// Configuration for rows in [TableAdvanced].
+  ///
+  /// You can use this class to specify row content, decoration and enabled actions.
+  TableAdvancedRow({
     required this.data,
     this.style,
     this.checked,
@@ -35,12 +65,27 @@ class AdvancedTableRow {
   });
 }
 
+/// An easy to use table with responsive layout and pagination.
 class TableAdvanced<T> extends StatefulWidget {
-  final List<AdvancedTableColumnHeader> columnHeaders;
-  final AdvancedTableRow Function(T item) rowBuilder;
+  /// Configurations for column headers. You can specify the [Widget] to show
+  /// and the flex space taken by each column.
+  final List<TableAdvancedColumnHeader> columnHeaders;
+
+  /// The builder for table rows, depending on the shown item.
+  final TableAdvancedRow Function(T item) rowBuilder;
+
+  /// The controller to set table content and manipulate pagination and other
+  /// properties.
   final TableAdvancedController<T> controller;
+
+  /// You can define the spacing between rows. Defaults to 12.
   final double rowSpacing;
 
+  /// An easy to use table with responsive layout and pagination.
+  ///
+  /// Use the `controller` to manipulate table properties such as content and pagination.
+  /// Note that the length of `columnHeaders` should match the number of cells of
+  /// each row returned by the `rowBuilder`, otherwise unexpected behaviour may happen.
   const TableAdvanced({
     Key? key,
     required this.columnHeaders,
@@ -90,7 +135,10 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
       value: widget.controller,
       child: Builder(
         builder: (context) {
-          if (widget.controller.dataItemsToShow.isEmpty) {
+          if (context
+              .read<TableAdvancedController<T>>()
+              .dataItemsToShow
+              .isEmpty) {
             return const SizedBox.shrink();
           }
 
@@ -133,7 +181,9 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
                         child: SizedBox(width: 800, child: _tableRows()))
                     : _tableRows(),
               ),
-              TableAdvancedPagination(controller: widget.controller),
+              if (context.read<TableAdvancedController<T>>().mode ==
+                  TableMode.paginationPage)
+                TableAdvancedPagination(controller: widget.controller),
             ],
           ),
         );
@@ -158,7 +208,7 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
                   widget.controller.checkItems(
                       widget.controller.dataItemsToShow,
                       checkAll: true,
-                      checked: checked ?? false);
+                  );
                 },
               ),
             ),
@@ -198,7 +248,8 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
         separatorBuilder: (context, index) => SizedBox(
           height: widget.rowSpacing,
         ),
-        // shrinkWrap: !Sizes.isScreenSizeMedium(context),
+        controller:
+            context.read<TableAdvancedController<T>>().initScrollController(),
         itemBuilder: (context, index) {
           var item = widget.rowBuilder(dataRows[index]);
           bool isOpen = false;
@@ -238,7 +289,8 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
                                   : (checked) {
                                       widget.controller.checkItems([
                                         dataRows[index],
-                                      ], checked: checked ?? false);
+                                        ],
+                                      );
                                     },
                             ),
                           ),
