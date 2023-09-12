@@ -95,7 +95,9 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         controller: TableAdvancedController(
             items: List.generate(99, (index) => index.toString()),
-            onCheckItems: (items) {}),
+          mode: TableMode.paginationPage,
+          onCheckItems: (items) {},
+        ),
       ),
     );
   }

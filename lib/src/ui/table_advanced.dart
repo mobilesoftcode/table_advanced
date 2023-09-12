@@ -135,7 +135,10 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
       value: widget.controller,
       child: Builder(
         builder: (context) {
-          if (widget.controller.dataItemsToShow.isEmpty) {
+          if (context
+              .read<TableAdvancedController<T>>()
+              .dataItemsToShow
+              .isEmpty) {
             return const SizedBox.shrink();
           }
 
@@ -178,7 +181,9 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
                         child: SizedBox(width: 800, child: _tableRows()))
                     : _tableRows(),
               ),
-              TableAdvancedPagination(controller: widget.controller),
+              if (context.read<TableAdvancedController<T>>().mode ==
+                  TableMode.paginationPage)
+                TableAdvancedPagination(controller: widget.controller),
             ],
           ),
         );
@@ -243,7 +248,8 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
         separatorBuilder: (context, index) => SizedBox(
           height: widget.rowSpacing,
         ),
-        // shrinkWrap: !Sizes.isScreenSizeMedium(context),
+        controller:
+            context.read<TableAdvancedController<T>>().initScrollController(),
         itemBuilder: (context, index) {
           var item = widget.rowBuilder(dataRows[index]);
           bool isOpen = false;
