@@ -81,6 +81,12 @@ class TableAdvanced<T> extends StatefulWidget {
   /// You can define the spacing between rows. Defaults to 12.
   final double rowSpacing;
 
+  /// Use this builder to customize the pagination controls when [TableMode] is paginationPage.
+  ///
+  /// If `null`, a default pagination will be shown
+  final Widget Function(TableAdvancedController<T> controller)?
+      paginationBuilder;
+
   /// An easy to use table with responsive layout and pagination.
   ///
   /// Use the `controller` to manipulate table properties such as content and pagination.
@@ -92,6 +98,7 @@ class TableAdvanced<T> extends StatefulWidget {
     required this.rowBuilder,
     required this.controller,
     this.rowSpacing = 12,
+    this.paginationBuilder,
   }) : super(key: key);
 
   @override
@@ -183,7 +190,7 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
               ),
               if (context.read<TableAdvancedController<T>>().mode ==
                   TableMode.paginationPage)
-                TableAdvancedPagination(controller: widget.controller),
+                _paginationWidget(),
             ],
           ),
         );
@@ -206,8 +213,8 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
                     widget.controller.dataItemsToShow.length,
                 onChanged: (checked) {
                   widget.controller.checkItems(
-                      widget.controller.dataItemsToShow,
-                      checkAll: true,
+                    widget.controller.dataItemsToShow,
+                    checkAll: true,
                   );
                 },
               ),
@@ -287,8 +294,9 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
                               onChanged: (item.disabled ?? false)
                                   ? null
                                   : (checked) {
-                                      widget.controller.checkItems([
-                                        dataRows[index],
+                                      widget.controller.checkItems(
+                                        [
+                                          dataRows[index],
                                         ],
                                       );
                                     },
@@ -338,6 +346,16 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
           });
         },
       );
+    });
+  }
+
+  Widget _paginationWidget() {
+    if (widget.paginationBuilder == null) {
+      return TableAdvancedPagination(controller: widget.controller);
+    }
+    return Builder(builder: (context) {
+      return widget.paginationBuilder!
+          .call(context.watch<TableAdvancedController<T>>());
     });
   }
 }
