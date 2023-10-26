@@ -130,7 +130,7 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
     if (_sortedIndex == index) {
       _sortAsc = !_sortAsc;
     } else {
-      _sortedIndex ??= index;
+      _sortedIndex = index;
       _sortAsc = true;
     }
     widget.columnHeaders[index].onSortTapped?.call(_sortAsc);
