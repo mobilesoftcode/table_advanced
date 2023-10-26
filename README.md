@@ -41,11 +41,14 @@ For specific properties regarding column headers and rows, check their class doc
 
 If you want to enable checkboxes for table rows, pass the `onCheckItems` argument to `TableAdvancedController`. You can also use the controller's `onChangePage` callback to load new data when the user changes table page or scolls to the bottom and then show the retrived items.
 
-If you set the `TableMode.paginationPage` mode, pagination will be managed through navigation controls, and table content will be replaced at every page change. Using `TableMode.paginationScroll` instead, shows new content when the user scrolls to the bottom of the table, appending new items at the end of the list.
+If you set the `TableMode.paginationPage` mode, pagination will be managed through navigation controls, and table content will be replaced at every page change. You can use default pagination style or override it using the `paginationBuilder` parameter.
+
+Using `TableMode.paginationScroll` instead, shows new content when the user scrolls to the bottom of the table, appending new items at the end of the list.
 
 The controller can be used to programmatically change page (`goToPage`) or change table items (`setItems`), either adding them to the table or replacing items completely.
 
 Remind to dispose the controller when needed.
+
 ## Additional information
 
 This package is mantained by the Competence Center Flutter of Mobilesoft Srl.
