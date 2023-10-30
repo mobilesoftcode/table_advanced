@@ -18,6 +18,12 @@ class TableAdvancedColumnHeader {
   /// will be called. This can be useful i.e. to sort elements in the table.
   final VoidCallback? onTap;
 
+  /// If you want to sort columns, implement this method.
+  ///
+  /// Note that you have to manage sorting externally and update the table UI accordingly
+  /// using the `sortedAsc` parameter.
+  final void Function(bool sortedAsc)? onSortTapped;
+
   /// Configuration for column headers of [TableAdvanced].
   ///
   /// The `child` is the [Widget] shown as column header. Use `flex` to specify
@@ -27,6 +33,7 @@ class TableAdvancedColumnHeader {
     required this.child,
     this.flex = 1,
     this.onTap,
+    this.onSortTapped,
   });
 }
 
@@ -87,6 +94,9 @@ class TableAdvanced<T> extends StatefulWidget {
   final Widget Function(TableAdvancedController<T> controller)?
       paginationBuilder;
 
+  /// A [Widget] to show when there is no data to display. Defaults to empty space.
+  final Widget? emptyState;
+
   /// An easy to use table with responsive layout and pagination.
   ///
   /// Use the `controller` to manipulate table properties such as content and pagination.
@@ -99,6 +109,7 @@ class TableAdvanced<T> extends StatefulWidget {
     required this.controller,
     this.rowSpacing = 12,
     this.paginationBuilder,
+    this.emptyState,
   }) : super(key: key);
 
   @override
@@ -111,6 +122,26 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
 
   late ScrollController _headerController;
   late ScrollController _bodyController;
+
+  int? _sortedIndex;
+  bool _sortAsc = true;
+
+  void _changeSort(int index) {
+    if (_sortedIndex == index) {
+      _sortAsc = !_sortAsc;
+    } else {
+      _sortedIndex = index;
+      _sortAsc = true;
+    }
+    widget.columnHeaders[index].onSortTapped?.call(_sortAsc);
+  }
+
+  bool? _isSortedAsc(int index) {
+    if (_sortedIndex != index) {
+      return null;
+    }
+    return _sortAsc;
+  }
 
   @override
   void initState() {
@@ -143,10 +174,10 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
       child: Builder(
         builder: (context) {
           if (context
-              .read<TableAdvancedController<T>>()
+              .watch<TableAdvancedController<T>>()
               .dataItemsToShow
               .isEmpty) {
-            return const SizedBox.shrink();
+            return widget.emptyState ?? const SizedBox.shrink();
           }
 
           var showScrollBar =
@@ -229,9 +260,29 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
                     child: Material(
                       child: InkWell(
                         onTap: widget.columnHeaders[index].onTap,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: widget.columnHeaders[index].child,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: widget.columnHeaders[index].child,
+                            ),
+                            if (widget.columnHeaders[index].onSortTapped !=
+                                null)
+                              IconButton(
+                                icon: Opacity(
+                                    opacity:
+                                        _isSortedAsc(index) == null ? 0.5 : 1,
+                                    child: _isSortedAsc(index) ?? false
+                                        ? const Icon(
+                                            Icons.keyboard_arrow_up_rounded)
+                                        : const Icon(
+                                            Icons.keyboard_arrow_down_rounded)),
+                                onPressed: () {
+                                  _changeSort(index);
+                                },
+                              ),
+                          ],
                         ),
                       ),
                     ),
@@ -247,8 +298,7 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
 
   Widget _tableRows() {
     return Builder(builder: (context) {
-      var dataRows =
-          context.watch<TableAdvancedController<T>>().dataItemsToShow;
+      var dataRows = context.read<TableAdvancedController<T>>().dataItemsToShow;
 
       return ListView.separated(
         itemCount: dataRows.length,
