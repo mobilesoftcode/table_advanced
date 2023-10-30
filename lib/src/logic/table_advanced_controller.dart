@@ -63,6 +63,10 @@ class TableAdvancedController<T> extends ChangeNotifier {
     pageCount = _evaluatePageCount(
         rowsToShow: rowsToShow, rowsCount: this.rowsCountToPaginate);
     setItems(items);
+
+    if (mode != TableMode.plain) {
+      goToPage(1);
+    }
   }
 
   /// The total number of items to use in the table pagination.
@@ -161,6 +165,11 @@ class TableAdvancedController<T> extends ChangeNotifier {
     pageCount = _evaluatePageCount(
         rowsToShow: rowsToShow, rowsCount: rowsCountToPaginate);
     notifyListeners();
+  }
+
+  /// Reloads data for current page
+  void reloadCurrentPage() {
+    goToPage(currentPage);
   }
 
   /// Goes to the next page of the table

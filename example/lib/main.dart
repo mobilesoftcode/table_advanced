@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ]));
         },
         controller: TableAdvancedController(
-            items: List.generate(99, (index) => index.toString()),
+          items: List.generate(99, (index) => index.toString()),
           mode: TableMode.paginationPage,
           onCheckItems: (items) {},
         ),
