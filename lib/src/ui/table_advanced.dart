@@ -180,43 +180,41 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
             return widget.emptyState ?? const SizedBox.shrink();
           }
 
-          var showScrollBar =
-              _shouldShowScrollBar(width: MediaQuery.of(context).size.width);
-          return showScrollBar
-              ? Scrollbar(
-                  thumbVisibility: true,
-                  controller: _headerController,
-                  child: _table(showScrollBar: showScrollBar),
-                )
-              : _table(showScrollBar: showScrollBar);
+          return _table();
         },
       ),
     );
   }
 
-  Widget _table({required bool showScrollBar}) {
+  Widget _table() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Material(
+        var showScrollBar = _shouldShowScrollBar(width: constraints.maxWidth);
+
+        var child = Material(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _shouldShowScrollBar(width: constraints.maxWidth)
+              showScrollBar
                   ? SingleChildScrollView(
                       controller: _headerController,
                       scrollDirection: Axis.horizontal,
-                      child: SizedBox(width: 800, child: _tableHeader()))
+                      child: SizedBox(
+                          width: widget.columnHeaders.length > 8 ? 1200 : 700,
+                          child: _tableHeader()))
                   : _tableHeader(),
               SizedBox(
                 height: widget.rowSpacing,
               ),
               Flexible(
-                child: _shouldShowScrollBar(width: constraints.maxWidth)
+                child: showScrollBar
                     ? SingleChildScrollView(
                         controller: _bodyController,
                         scrollDirection: Axis.horizontal,
-                        child: SizedBox(width: 800, child: _tableRows()))
+                        child: SizedBox(
+                            width: widget.columnHeaders.length > 8 ? 1200 : 700,
+                            child: _tableRows()))
                     : _tableRows(),
               ),
               if (context.read<TableAdvancedController<T>>().mode ==
@@ -225,6 +223,13 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
             ],
           ),
         );
+        return showScrollBar
+            ? Scrollbar(
+                thumbVisibility: true,
+                controller: _headerController,
+                child: child,
+              )
+            : child;
       },
     );
   }
@@ -262,10 +267,12 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
                         onTap: widget.columnHeaders[index].onTap,
                         child: Row(
                           children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: widget.columnHeaders[index].child,
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: widget.columnHeaders[index].child,
+                              ),
                             ),
                             if (widget.columnHeaders[index].onSortTapped !=
                                 null)
