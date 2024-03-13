@@ -1,6 +1,6 @@
 name: table_advanced
 description: A table with pagination and column sorting for Flutter projects.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/mobilesoftcode/table_advanced
 issue_tracker: https://github.com/mobilesoftcode/table_advanced/issues
 
