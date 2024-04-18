@@ -47,7 +47,7 @@ class TableAdvancedController<T> extends ChangeNotifier {
   /// `rowsCountToPagination` to manage pagination consequently. If not provided,
   /// the number of items to manage the pagination will be taken by the `items` list.
   TableAdvancedController({
-    required this.items,
+    this.items,
     int? rowsCountToPaginate,
     this.mode = TableMode.paginationScroll,
     this.onCheckItems,
