@@ -15,7 +15,7 @@ class TableAdvancedController<T> extends ChangeNotifier {
   /// only the items to show in the initial page.
   /// The other content can then be loaded depending on shown page using the
   /// `onChangePage` callback of this controller.
-  final List<T> items;
+  final List<T>? items;
 
   /// The method fired when the page shown by the table changes.
   ///
@@ -53,8 +53,9 @@ class TableAdvancedController<T> extends ChangeNotifier {
     this.onCheckItems,
     this.onChangePage,
     this.rowsToShow = 10,
-  }) {
-    this.rowsCountToPaginate = rowsCountToPaginate ?? items.length;
+  })  : assert(items != null || onChangePage != null),
+        assert(items == null || mode != TableMode.plain) {
+    this.rowsCountToPaginate = rowsCountToPaginate ?? items?.length ?? 0;
 
     if (mode == TableMode.plain) {
       rowsToShow = this.rowsCountToPaginate;
@@ -62,7 +63,7 @@ class TableAdvancedController<T> extends ChangeNotifier {
 
     pageCount = _evaluatePageCount(
         rowsToShow: rowsToShow, rowsCount: this.rowsCountToPaginate);
-    setItems(items);
+    setItems(items ?? []);
 
     if (mode != TableMode.plain) {
       goToPage(1);
@@ -208,7 +209,9 @@ class TableAdvancedController<T> extends ChangeNotifier {
     pageCount = _evaluatePageCount(
         rowsToShow: rowsToShow, rowsCount: rowsCountToPaginate);
     var newData = await onChangePage?.call(currentPage, rowsToShow);
-    setItems(newData ?? dataItems, replace: newData != null, reload: true);
+    setItems(newData ?? dataItems,
+        replace: newData != null && mode != TableMode.paginationScroll,
+        reload: true);
   }
 
   /// Set items to populate the table.
@@ -220,7 +223,11 @@ class TableAdvancedController<T> extends ChangeNotifier {
   /// - If you want a table with a scrolling pagination (i.e. the user arrives to the bottom
   /// of the table and new data loads), new items should be appendend to the initial ones.
   void setItems(List<T> items, {bool replace = false, bool reload = false}) {
-    this.dataItems = List.of(items);
+    if (replace) {
+      this.dataItems.addAll(List.of(items));
+    } else {
+      this.dataItems = List.of(items);
+    }
     dataItemsToShow = _evaluateRowsToShow(replace: replace);
 
     if (reload) {
