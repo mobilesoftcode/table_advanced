@@ -192,6 +192,7 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
         var showScrollBar = _shouldShowScrollBar(width: constraints.maxWidth);
 
         var child = Material(
+          color: Colors.transparent,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
