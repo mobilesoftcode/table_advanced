@@ -88,6 +88,9 @@ class TableAdvanced<T> extends StatefulWidget {
   /// You can define the spacing between rows. Defaults to 12.
   final double rowSpacing;
 
+  /// You can define padding for table content (excludes header)
+  final EdgeInsets innerPadding;
+
   /// Use this builder to customize the pagination controls when [TableMode] is paginationPage.
   ///
   /// If `null`, a default pagination will be shown
@@ -107,6 +110,7 @@ class TableAdvanced<T> extends StatefulWidget {
     required this.columnHeaders,
     required this.rowBuilder,
     required this.controller,
+    this.innerPadding = EdgeInsets.zero,
     this.rowSpacing = 12,
     this.paginationBuilder,
     this.emptyState,
@@ -192,6 +196,7 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
         var showScrollBar = _shouldShowScrollBar(width: constraints.maxWidth);
 
         var child = Material(
+          color: Colors.transparent,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -308,6 +313,7 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
       var dataRows = context.read<TableAdvancedController<T>>().dataItemsToShow;
 
       return ListView.separated(
+        padding: widget.innerPadding,
         itemCount: dataRows.length,
         separatorBuilder: (context, index) => SizedBox(
           height: widget.rowSpacing,
