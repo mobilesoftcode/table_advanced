@@ -1,3 +1,8 @@
+## 0.0.5
+
+* Bug fix for pagination scroll mode
+* Updated dependencies
+
 ## 0.0.4
 
 * Fixed logic to resize table for smaller screens

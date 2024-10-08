@@ -1,6 +1,6 @@
 name: table_advanced
 description: A table with pagination and column sorting for Flutter projects.
-version: 0.0.4
+version: 0.0.5
 homepage: https://github.com/mobilesoftcode/table_advanced
 issue_tracker: https://github.com/mobilesoftcode/table_advanced/issues
 
@@ -14,11 +14,11 @@ dependencies:
 
   linked_scroll_controller: ^0.2.0
   provider: ^6.0.5
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.3
+  flutter_lints: ">=2.0.3 <5.0.0"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
