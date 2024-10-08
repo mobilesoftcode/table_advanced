@@ -1,3 +1,7 @@
+## 0.0.5+1
+
+* Bug fix
+
 ## 0.0.5
 
 * Bug fix for pagination scroll mode
