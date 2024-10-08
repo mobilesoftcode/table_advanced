@@ -85,7 +85,7 @@ class TableAdvancedController<T> extends ChangeNotifier {
   late int pageCount;
 
   /// The entire list of items populating the table (independent of pagination)
-  late List<T> dataItems;
+  List<T> dataItems = [];
 
   /// The list of items shown in the table for the current page and configuration
   late List<T> dataItemsToShow;
@@ -199,7 +199,9 @@ class TableAdvancedController<T> extends ChangeNotifier {
   void goToPage(int page, {bool pageStartsFromZero = false}) async {
     currentPage = page + (pageStartsFromZero ? 1 : 0);
     var newItems = await onChangePage?.call(currentPage, rowsToShow);
-    setItems(newItems ?? dataItems, replace: newItems != null, reload: true);
+    setItems(newItems ?? dataItems,
+        replace: newItems != null && mode != TableMode.paginationScroll,
+        reload: true);
   }
 
   /// Changed the number of rows to show per page
@@ -223,7 +225,7 @@ class TableAdvancedController<T> extends ChangeNotifier {
   /// - If you want a table with a scrolling pagination (i.e. the user arrives to the bottom
   /// of the table and new data loads), new items should be appendend to the initial ones.
   void setItems(List<T> items, {bool replace = false, bool reload = false}) {
-    if (replace) {
+    if (!replace) {
       this.dataItems.addAll(List.of(items));
     } else {
       this.dataItems = List.of(items);
@@ -244,7 +246,7 @@ class TableAdvancedController<T> extends ChangeNotifier {
 
     if (mode == TableMode.paginationScroll) {
       rows = List.of(dataItems);
-      rowsToShow = rowsToShow ~/ currentPage + rowsToShow;
+      return rows;
     } else {
       var initialIndexToSplit = (currentPage - 1) * rowsToShow;
       if (dataItems.length < initialIndexToSplit) {
