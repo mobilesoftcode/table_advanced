@@ -35,6 +35,8 @@ class TableAdvancedController<T> extends ChangeNotifier {
   /// [TableMode.paginationScroll] will have pagination managed through scolling
   final TableMode mode;
 
+  final ScrollController? scrollController;
+
   /// Controller to manage content and properties of [TableAdvanced].
   ///
   /// Use the controller to set items to display in the table and eventually
@@ -53,6 +55,7 @@ class TableAdvancedController<T> extends ChangeNotifier {
     this.onCheckItems,
     this.onChangePage,
     this.rowsToShow = 10,
+    this.scrollController,
   })  : assert(items != null || onChangePage != null),
         assert(items == null || mode != TableMode.plain) {
     this.rowsCountToPaginate = rowsCountToPaginate ?? items?.length ?? 0;
@@ -110,7 +113,7 @@ class TableAdvancedController<T> extends ChangeNotifier {
       return null;
     }
 
-    ScrollController controller = ScrollController();
+    ScrollController controller = scrollController ?? ScrollController();
     controller.addListener(() {
       if (controller.position.pixels == controller.position.maxScrollExtent &&
           _needToLoadMoreData()) {
