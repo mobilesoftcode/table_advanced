@@ -37,6 +37,8 @@ class TableAdvancedController<T> extends ChangeNotifier {
 
   final ScrollController? scrollController;
 
+  bool isLoading = false;
+
   /// Controller to manage content and properties of [TableAdvanced].
   ///
   /// Use the controller to set items to display in the table and eventually
@@ -201,7 +203,12 @@ class TableAdvancedController<T> extends ChangeNotifier {
   /// the initial items paged will be shown.
   void goToPage(int page, {bool pageStartsFromZero = false}) async {
     currentPage = page + (pageStartsFromZero ? 1 : 0);
+    isLoading = true;
+    notifyListeners();
+
     var newItems = await onChangePage?.call(currentPage, rowsToShow);
+
+    isLoading = false;
     setItems(newItems ?? dataItems,
         replace: newItems != null && mode != TableMode.paginationScroll,
         reload: true);
@@ -213,7 +220,10 @@ class TableAdvancedController<T> extends ChangeNotifier {
     rowsToShow = number;
     pageCount = _evaluatePageCount(
         rowsToShow: rowsToShow, rowsCount: rowsCountToPaginate);
+    isLoading = true;
+    notifyListeners();
     var newData = await onChangePage?.call(currentPage, rowsToShow);
+    isLoading = false;
     setItems(newData ?? dataItems,
         replace: newData != null && mode != TableMode.paginationScroll,
         reload: true);

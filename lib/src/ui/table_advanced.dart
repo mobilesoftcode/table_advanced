@@ -177,6 +177,9 @@ class _TableAdvancedState<T> extends State<TableAdvanced<T>> {
       value: widget.controller,
       child: Builder(
         builder: (context) {
+          if (context.watch<TableAdvancedController<T>>().isLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
           if (context
               .watch<TableAdvancedController<T>>()
               .dataItemsToShow
